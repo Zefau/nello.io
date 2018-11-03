@@ -5,6 +5,31 @@ nello one connects your intercom with your smartphone and Wi-Fi. This adapter co
 This is a javascript implementation of the nello.io API.
 
 
+## API documentation
+The documentation for this javascript implementation of the nello.io API can be found at https://zefau.github.io/nello.io/Nello.html.
+
+
+## Usage
+To use the API, add nello to the dependencies of your project in package.json or install it using npm
+```npm install nello```.
+
+Get Client ID and Client Secret from https://auth.nello.io/admin and generate a token at https://nelloauth.docs.apiary.io/#reference/0/token/create-a-new-token-client-credentials.
+
+Provide the credentials to the Nello class / constructor:
+
+```js
+const Nello = require('nello');
+
+var nello = nello = new Nello({'clientId': '...', 'clientSecret': '...', 'tokenType': '...', 'tokenAccess': '...');
+
+// get locations
+nello.getLocations(function(res) { ... });
+
+// open door of a location with locationId
+nello.openDoor(locationId);
+```
+
+
 ## Changelog
 
 ### 0.4.0 (2018-11-03)
