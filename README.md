@@ -1,4 +1,4 @@
-![Logo](admin/nello.png)
+![Logo](nello.png)
 # nello.io
 nello one connects your intercom with your smartphone and Wi-Fi. This adapter connects your nello one to ioBroker using the official API (https://nellopublicapi.docs.apiary.io/).
 
