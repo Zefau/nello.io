@@ -30,6 +30,10 @@ nello.openDoor(locationId);
 ```
 
 
+## Example
+You may find a full implemented example at https://github.com/Zefau/ioBroker.nello (respectively https://github.com/Zefau/ioBroker.nello/blob/master/main.js).
+
+
 ## Changelog
 
 ### 0.4.0 (2018-11-03)
