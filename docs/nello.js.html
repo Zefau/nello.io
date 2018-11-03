@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>nello.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Nello.html">Nello</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_getIcal">_getIcal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_req">_req</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_setIcal">_setIcal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#createTimeWindow">createTimeWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#deleteTimeWindow">deleteTimeWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#getLocations">getLocations</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#getTimeWindows">getTimeWindows</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#listen">listen</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#openDoor">openDoor</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#unlisten">unlisten</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">nello.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const _request = require('request');
+const _http = require('http');
+const _ical = require('ical.js');
+const _uuidv4 = require('uuid/v4');
+
+/**
+ * Nello
+ *
+ * @description Javascript implementation of the nello.io API
+ * @author Zefau &lt;https://github.com/Zefau/>
+ * @license MIT License
+ * @version 0.4.1
+ *
+ */
+module.exports = Nello;
+class Nello
+{
+	/**
+	* Ical Object.
+	*
+	* @typedef	ical
+	* @type		{object}
+	* @property	{string}		uid				UID of the event
+	* @property	{string}		name			Name of the event
+	* @property	{string}		summary			Summary of the event
+	* @property	{object}		dtstamp			Stamp of the event with indizes year, month, day, hour, minute, second, isDate, timezone
+	* @property	{object}		dtstart			Start of the event with indizes year, month, day, hour, minute, second, isDate, timezone
+	* @property	{object}		dtend			End of the event with indizes year, month, day, hour, minute, second, isDate, timezone
+	* @property	{object}		recurrence		Recurrence of event with indizes depending on specific recurrency freq, byday, bymonthday, bymonth, until
+	*
+	*/
+	
+	
+	/**
+	 * Constructor.
+	 *
+	 * @param	{object}		connection					Object containing connection settings
+	 * @param	{string}		connection.clientId			Client ID
+	 * @param	{string}		connection.clientSecret		Client Secret
+	 * @param	{string}		connection.tokenType		Token Type
+	 * @param	{string}		connection.tokenAccess		Token Access
+	 * @return	void
+	 *
+	 */
+    constructor(connection)
+	{
+		// initialise variables
+		this.clientId = connection.clientId;
+		this.clientSecret = connection.clientSecret;
+		this.token = {
+			type: connection.tokenType,
+			access: connection.tokenAccess,
+		};
+		
+		this.server = null;
+    }
+	
+	/**
+	 * Converts an ical string to an object with all the data. See https://www.npmjs.com/package/jsical for more information.
+	 *
+	 * @see			{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
+	 * @param		{string}		ical			Ical string to be converted
+	 * @return		{ical}							Parsed ical as object (incl. _raw index for original string)		
+	 *
+	 */
+	_getIcal(ical)
+	{
+		var data = {_raw: JSON.stringify(ical)};
+		var vevent = new _ical.Component(_ical.parse(ical)).getFirstSubcomponent('vevent');
+		['UID', 'SUMMARY', 'DTSTAMP', 'DTSTART', 'DTEND'].forEach(function(key)
+		{
+			data[key.toLowerCase()] = vevent.getFirstPropertyValue(key.toLowerCase()) || null;
+		});
+		
+		data.rrule = new _ical.Recur(vevent.getFirstPropertyValue('rrule'));
+		return data;
+	}
+	
+	/**
+	 * Converts an ical object to a string with the relevant data. See https://www.npmjs.com/package/jsical for more information.
+	 *
+	 * @see		{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
+	 * @param	{ical}			ical			Ical object to be converted to string
+	 * @return	{string}						Converted ical string
+	 *
+	 */
+	_setIcal(data)
+	{
+		// to be implemented
+		
+		return '';
+	}
+	
+	/**
+	 * Sends a request to the nello API.
+	 *
+	 * @param	{string}		url				URL to be called
+	 * @param	{string}		method			(optional) Method to be used (GET, POST, PUT or DELETE), default is GET
+	 * @param	{object}		body			(optional) Body to be sent with the request, default is empty {}
+	 * @param	{object}		callback		(optional)
+	 * @param	{function}		callback.fct	(optional) Callback function to be invoked receiving -err, res, body- as param
+	 * @param	{function}		callback.return	(optional) Callback function to be invoked only receiving -{result: true|false, error: {..}}- as param
+	 * @return	{object}						this
+	 *
+	 */
+	_req(url, method = "GET", callback = {}, body = {})
+	{
+		_request({
+			uri: url,
+			method: method,
+			headers: {
+				"Authorization": this.token.type + " " + this.token.access
+			},
+			body: body,
+			json: true
+		},
+		callback.fct !== undefined ? callback.fct : function(err, res, body)
+		{
+			if (body !== undefined &amp;&amp; body.result !== undefined &amp;&amp; body.result.success === true)
+				callback.return({result: true});
+			
+			else
+				callback.return({result: false, error: err});
+		});
+		
+		return this;
+	}
+	
+	/**
+	 * Opens door of a location.
+	 *
+	 * @param	{string}		locationId		ID of the location
+	 * @param	{function}		callback		(optional) Callback function to be invoked
+	 * @return	{object}						this
+	 *
+	 */
+	openDoor(locationId, callback = function() {})
+	{
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/open/", "PUT", {return: callback});
+	}
+	
+	/**
+	 * Gets all locations.
+	 *
+	 * @param	{function}		callback		Callback function to be invoked
+	 * @return	{object}						this
+	 *
+	 */
+	getLocations(callback)
+	{
+		return this._req("https://public-api.nello.io/v1/locations/", "GET", {fct: function(err, res, body)
+			{
+				if (body !== undefined &amp;&amp; body.result !== undefined &amp;&amp; body.result.success === true)
+					callback({result: true, locations: body.data});
+				
+				else
+					callback({result: false, error: err});
+			}
+		});
+    }
+	
+	/**
+	 * Gets all time windows.
+	 *
+	 * @param	{string}		locationId		ID of the location
+	 * @param	{function}		callback		Callback function to be invoked
+	 * @return	{object}						this
+	 *
+	 */
+	getTimeWindows(locationId, callback)
+	{
+		var that = this;
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/", "GET", {fct: function(err, res, body)
+			{
+				if (body !== undefined &amp;&amp; body.result !== undefined &amp;&amp; body.result.success === true)
+				{
+					// convert ical-string to full data object
+					body.data.forEach(function(entry, i)
+					{
+						body.data[i].ical = that._getIcal(entry.ical);
+					});
+					
+					callback({result: true, timeWindows: body.data});
+				}
+				
+				else
+					callback({result: false, error: err});
+			}
+		});
+	}
+	
+	/**
+	 * Creates a time window.
+	 *
+	 * @param	{string}		locationId			ID of the location
+	 * @param	{object}		data				Data for the time window
+	 * @param	{string}		data.name			Name of the time window
+	 * @param	{string|object}	data.ical			Ical data of the time window
+	 * @param	{function}		callback			(optional) Callback function to be invoked
+	 * @return	{object}							this
+	 *
+	 */
+	createTimeWindow(locationId, data, callback = function() {})
+	{
+		// convert ical to object
+		if (data.ical !== 'string')
+			data.ical = this._setIcal(Object.assign(data.ical, {name: data.name}));
+		
+		// roughly verify ical data
+		else if (data.ical === 'string' &amp;&amp; (data.ical.indexOf('BEGIN:VCALENDAR') === -1 || data.ical.indexOf('END:VCALENDAR') === -1 || data.ical.indexOf('BEGIN:VEVENT') === -1 || data.ical.indexOf('END:VEVENT') === -1))
+			callback({result: false, error: 'Wrong ical data provided! Missing BEGIN:VCALENDAR, END:VCALENDAR, BEGIN:VEVENT or END:VEVENT.'});
+		
+		// request
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/", "POST", {fct: function(err, res, body)
+			{
+				if (body !== undefined &amp;&amp; body.result !== undefined &amp;&amp; body.result.success === true)
+					callback({result: true, timeWindow: data.body});
+				
+				else
+					callback({result: false, error: err});
+			}
+		}, {'name': data.name, 'ical': data.ical});
+	}
+	
+	/**
+	 * Deletes a time window.
+	 *
+	 * @param	{string}		locationId		ID of the location
+	 * @param	{string}		twId			ID of the time window
+	 * @param	{function}		callback		(optional) Callback function to be invoked
+	 * @return	{object}						this
+	 *
+	 */
+	deleteTimeWindow(locationId, twId, callback = function() {})
+	{
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/" + twId + "/", "DELETE", {return: callback});
+	}
+	
+	/**
+	 * Unubscribe from events (delete a webhook)
+	 *
+	 * @param	{string}			locationId		ID of the location
+	 * @param	{function}			callback		(optional) Callback function to be invoked
+	 * @return	{object}							this
+	 *
+	 */
+	unlisten(locationId, callback = function() {})
+	{
+		this.server = null;
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "DELETE", {return: callback});
+	}
+	
+	/**
+	 * Subscribe / listen to events (add a webhook)
+	 *
+	 * @param	{string}			locationId		ID of the location
+	 * @param	{object|string}		uri				External URL including port (e.g. www.domain.com:port) of the webhook that the adapter is listening on
+	 * @param	{string}			uri.url			External URL of the webhook that the adapter is listening on
+	 * @param	{integer}			uri.port		External Port of the webhook that the adapter is listening on
+	 * @param	{array}				actions			(optional) Actions to listen to (defaults to ['swipe', 'geo', 'tw', 'deny'])
+	 * @param	{function}			callback		Callback function to be invoked
+	 * @return	{object}							this
+	 *
+	 */
+	listen(locationId, uri, callback, actions = ['swipe', 'geo', 'tw', 'deny'])
+	{
+		// convert uri to object
+		if (typeof uri === 'string')
+		{
+			if (uri.indexOf(':') === -1)
+				callback({result: false, error: 'Invalid url specified! Please specify port using ":", e.g. domain.com:PORT!'});
+			
+			else
+				var u = {
+					url: (uri.indexOf('http') === -1 ? 'http://' : '') + uri.substr(0, uri.indexOf(':')),
+					port: parseInt(uri.substr(uri.indexOf(':')+1))
+				};
+		}
+		else
+			var u = {
+				url: (uri.url.indexOf('http') === -1 ? 'http://' : '') + uri.url,
+				port: url.port
+			};
+		
+		// request
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "PUT", {fct: function(err, res, body)
+			{
+				if (body !== undefined &amp;&amp; body.result !== undefined &amp;&amp; body.result.success === true)
+				{
+					this.server = _http.createServer((request, response) =>
+					{
+						var data = null, body = [];
+						request
+							.on('error', (err) => {callback({result: false, error: err})})
+							.on('data', (chunk) => {body.push(chunk)})
+							.on('end', () => {
+								body = JSON.parse(Buffer.concat(body).toString());
+								body.data.timestamp = Math.round(Date.now()/1000);
+								callback({result: true, body: body})
+							});
+						
+					}).listen(u.port);
+					callback({result: true, uri: u});
+				}
+				
+				else
+					callback({result: false, error: err});
+			}
+		}, {'url': u.url + ':' + u.port, 'actions': actions});
+	}
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Nov 03 2018 10:31:24 GMT+0100 (CET) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
