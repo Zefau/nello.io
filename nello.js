@@ -9,13 +9,37 @@ const _uuidv4 = require('uuid/v4');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 0.4.0
+ * @version 0.4.1
  *
  */
-module.exports = class Nello
+module.exports = Nello;
+class Nello
 {
 	/**
+	* Ical Object.
+	*
+	* @typedef	ical
+	* @type		{object}
+	* @property	{string}		uid				UID of the event
+	* @property	{string}		name			Name of the event
+	* @property	{string}		summary			Summary of the event
+	* @property	{object}		dtstamp			Stamp of the event with indizes year, month, day, hour, minute, second, isDate, timezone
+	* @property	{object}		dtstart			Start of the event with indizes year, month, day, hour, minute, second, isDate, timezone
+	* @property	{object}		dtend			End of the event with indizes year, month, day, hour, minute, second, isDate, timezone
+	* @property	{object}		recurrence		Recurrence of event with indizes depending on specific recurrency freq, byday, bymonthday, bymonth, until
+	*
+	*/
+	
+	
+	/**
+	 * Constructor.
 	 *
+	 * @param	{object}		connection					Object containing connection settings
+	 * @param	{string}		connection.clientId			Client ID
+	 * @param	{string}		connection.clientSecret		Client Secret
+	 * @param	{string}		connection.tokenType		Token Type
+	 * @param	{string}		connection.tokenAccess		Token Access
+	 * @return	void
 	 *
 	 */
     constructor(connection)
@@ -34,15 +58,9 @@ module.exports = class Nello
 	/**
 	 * Converts an ical string to an object with all the data. See https://www.npmjs.com/package/jsical for more information.
 	 *
-	 * @see		{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
-	 * @param	{string}		ical			Ical string to be converted
-	 * @return	{object}		ical			Parsed ical as object (incl. _raw index for original string)
-	 * @return	{string}		ical.uid		UID of the event
-	 * @return	{string}		ical.summary	Summary of the event
-	 * @return	{object}		ical.dtstamp	Stamp of the event with indizes year, month, day, hour, minute, second, isDate, timezone
-	 * @return	{object}		ical.dtstart	Start of the event with indizes year, month, day, hour, minute, second, isDate, timezone
-	 * @return	{object}		ical.dtend		End of the event with indizes year, month, day, hour, minute, second, isDate, timezone
-	 * @return	{object}		ical.recurrence	Recurrence of event with indizes depending on specific recurrency freq, byday, bymonthday, bymonth, until
+	 * @see			{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
+	 * @param		{string}		ical			Ical string to be converted
+	 * @return		{ical}							Parsed ical as object (incl. _raw index for original string)		
 	 *
 	 */
 	_getIcal(ical)
@@ -62,13 +80,8 @@ module.exports = class Nello
 	 * Converts an ical object to a string with the relevant data. See https://www.npmjs.com/package/jsical for more information.
 	 *
 	 * @see		{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
-	 * @param	{object}		ical			Ical object to be converted to string
-	 * @param	{string}		ical.id			UID of the event
-	 * @param	{string}		ical.name		Name of the event
-	 * @param	{string}		ical.summary	Summary of the event
-	 * @param	{string}		ical.start		Start date of the event
-	 * @param	{string}		ical.end		End date or duration of the event
-	 * @return	{string}						Parsed ical as string
+	 * @param	{ical}			ical			Ical object to be converted to string
+	 * @return	{string}						Converted ical string
 	 *
 	 */
 	_setIcal(data)
@@ -183,7 +196,6 @@ module.exports = class Nello
 	 * @param	{object}		data				Data for the time window
 	 * @param	{string}		data.name			Name of the time window
 	 * @param	{string|object}	data.ical			Ical data of the time window
-	 * @param	{string|object}	data.ical.summary	(optional) Description of the time window, default is data.name
 	 * @param	{function}		callback			(optional) Callback function to be invoked
 	 * @return	{object}							this
 	 *
