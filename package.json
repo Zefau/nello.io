@@ -1,0 +1,34 @@
+{
+  "name": "nello",
+  "version": "0.4.0",
+  "description": "Javascript implementation of the nello.io API",
+  "author": {
+    "name": "zefau",
+    "email": "zefau@mailbox.org"
+  },
+  
+  "homepage": "https://github.com/Zefau/ioBroker.nello",
+  "license": "MIT",
+  "keywords": [
+    "nello",
+    "door"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Zefau/nello.io"
+  },
+  "bugs": {
+    "url": "https://github.com/Zefau/nello.io/issues"
+  },
+  
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "request": "^2.88.0",
+    "ical.js": "^1.2.2",
+    "uuid": "^3.3.2"
+  },
+  "main": "nello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
