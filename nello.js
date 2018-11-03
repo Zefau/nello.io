@@ -12,7 +12,6 @@ const _uuidv4 = require('uuid/v4');
  * @version 0.4.1
  *
  */
-module.exports = Nello;
 class Nello
 {
 	/**
@@ -309,3 +308,5 @@ class Nello
 		}, {'url': u.url + ':' + u.port, 'actions': actions});
 	}
 }
+
+module.exports = Nello;
