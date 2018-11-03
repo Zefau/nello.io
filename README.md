@@ -36,6 +36,9 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
+### 0.4.3 / 0.4.4 (2018-11-03)
+- (zefau) fixed invalid module exports
+
 ### 0.4.0 (2018-11-03)
 - (zefau) initial release
 
