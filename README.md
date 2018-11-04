@@ -36,6 +36,9 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
+### 0.4.5 (2018-11-04)
+- (zefau) added HTTPs support for webhooks (which however does not seem to be supported by the Nello API)
+
 ### 0.4.3 / 0.4.4 (2018-11-03)
 - (zefau) fixed invalid module exports
 
