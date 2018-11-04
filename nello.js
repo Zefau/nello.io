@@ -1,5 +1,7 @@
 const _request = require('request');
+const _fs = require('fs');
 const _http = require('http');
+const _https = require('https');
 const _ical = require('ical.js');
 const _uuidv4 = require('uuid/v4');
 
@@ -9,7 +11,7 @@ const _uuidv4 = require('uuid/v4');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 0.4.1
+ * @version 0.4.5
  *
  */
 class Nello
@@ -38,6 +40,9 @@ class Nello
 	 * @param	{string}		connection.clientSecret		Client Secret
 	 * @param	{string}		connection.tokenType		Token Type
 	 * @param	{string}		connection.tokenAccess		Token Access
+	 * @param	{object}		connection.ssl				(optional) Object for SSL connection
+	 * @param	{string}		connection.ssl.key			(optional) Private Key for SSL connection
+	 * @param	{string}		connection.ssl.cert			(optional) Certificate for SSL connection
 	 * @return	void
 	 *
 	 */
@@ -51,15 +56,20 @@ class Nello
 			access: connection.tokenAccess,
 		};
 		
+		// PLEASE NOTE: The nello API v1 does not seem to support SSL / HTTPS
+		//
+		this.isSecure = connection.ssl !== undefined && connection.ssl.key !== undefined && connection.ssl.cert !== undefined && connection.ssl.key !== '' && connection.ssl.cert !== '';
+		this.ssl = !this.isSecure ? null : {key: connection.ssl.key, cert: connection.ssl.cert};
+		
 		this.server = null;
     }
 	
 	/**
 	 * Converts an ical string to an object with all the data. See https://www.npmjs.com/package/jsical for more information.
 	 *
-	 * @see			{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
-	 * @param		{string}		ical			Ical string to be converted
-	 * @return		{ical}							Parsed ical as object (incl. _raw index for original string)		
+	 * @see		{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
+	 * @param	{string}		ical			Ical string to be converted
+	 * @return	{ical}							Parsed ical as object (incl. _raw index for original string)		
 	 *
 	 */
 	_getIcal(ical)
@@ -73,6 +83,40 @@ class Nello
 		
 		data.rrule = new _ical.Recur(vevent.getFirstPropertyValue('rrule'));
 		return data;
+	}
+	
+	/**
+	 * Handle HTTP / HTTPS response.
+	 *
+	 * @param	{object}		request
+	 * @param	{object}		response
+	 * @param	{function}		callback		(optional) Callback function to be invoked
+	 * @return	void
+	 *
+	 */
+	_handler(callback)
+	{
+		var data = null, body = [];
+		return function(request, response)
+		{
+			request
+				.on('error', (err) => {callback({result: false, error: err})})
+				.on('data', (chunk) => {body.push(chunk)})
+				.on('end', () =>
+				{
+					var result = null;
+					try {
+						body = JSON.parse(Buffer.concat(body).toString());
+						body.data.timestamp = Math.round(Date.now()/1000);
+						result = {result: true, body: body};
+					}
+					catch(err) {
+						result = {result: false, error: err.message};
+					}
+					
+					callback(result);
+				});
+		}
 	}
 	
 	/**
@@ -271,41 +315,45 @@ class Nello
 			
 			else
 				var u = {
-					url: (uri.indexOf('http') === -1 ? 'http://' : '') + uri.substr(0, uri.indexOf(':')),
+					ssl: this.isSecure,
+					url: (this.isSecure ? 'https://' : 'http://') + uri.substr(0, uri.indexOf(':')).replace(/http:\/\//gi, '').replace(/https:\/\//gi, ''),
 					port: parseInt(uri.substr(uri.indexOf(':')+1))
 				};
 		}
 		else
 			var u = {
-				url: (uri.url.indexOf('http') === -1 ? 'http://' : '') + uri.url,
-				port: url.port
+				ssl: this.isSecure,
+				url: (this.isSecure ? 'https://' : 'http://') + uri.substr(0, uri.indexOf(':')).replace(/http:\/\//gi, '').replace(/https:\/\//gi, ''),
+				port: parseInt(url.port)
 			};
 		
 		// request
+		u.uri = u.url + ':' + u.port;
+		var that = this;
 		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "PUT", {fct: function(err, res, body)
 			{
 				if (body !== undefined && body.result !== undefined && body.result.success === true)
 				{
-					this.server = _http.createServer((request, response) =>
-					{
-						var data = null, body = [];
-						request
-							.on('error', (err) => {callback({result: false, error: err})})
-							.on('data', (chunk) => {body.push(chunk)})
-							.on('end', () => {
-								body = JSON.parse(Buffer.concat(body).toString());
-								body.data.timestamp = Math.round(Date.now()/1000);
-								callback({result: true, body: body})
-							});
-						
-					}).listen(u.port);
+					if (that.isSecure === true)
+						that.server = _https.createServer(
+							{
+								key: that.ssl.key.indexOf('.') === -1 ? that.ssl.key : _fs.readFileSync(that.ssl.key),
+								//ca: that.ssl.ca.indexOf('.') === -1 ? that.ssl.ca : _fs.readFileSync(that.ssl.ca),
+								cert: that.ssl.cert.indexOf('.') === -1 ? that.ssl.cert : _fs.readFileSync(that.ssl.cert)
+							},
+							that._handler(callback)
+						).listen(u.port);
+					
+					else
+						that.server = _http.createServer(that._handler(callback)).listen(u.port);
+					
 					callback({result: true, uri: u});
 				}
 				
 				else
 					callback({result: false, error: err});
 			}
-		}, {'url': u.url + ':' + u.port, 'actions': actions});
+		}, {'url': u.uri, 'actions': actions});
 	}
 }
 
