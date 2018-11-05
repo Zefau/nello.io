@@ -96,9 +96,9 @@ class Nello
 	 */
 	_handler(callback)
 	{
-		var data = null, body = [];
 		return function(request, response)
 		{
+			var body = [];
 			request
 				.on('error', (err) => {callback({result: false, error: err})})
 				.on('data', (chunk) => {body.push(chunk)})
