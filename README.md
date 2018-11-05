@@ -4,6 +4,11 @@ nello one connects your intercom with your smartphone and Wi-Fi. This adapter co
 
 This is a javascript implementation of the nello.io API.
 
+[![NPM version](http://img.shields.io/npm/v/nello.svg)](https://www.npmjs.com/package/nello)
+[![Downloads](https://img.shields.io/npm/dm/nello.svg)](https://www.npmjs.com/package/nello)
+
+[![NPM](https://nodei.co/npm/nello.png?downloads=true)](https://nodei.co/npm/nello/)
+
 
 ## API documentation
 The documentation for this javascript implementation of the nello.io API can be found at https://zefau.github.io/nello.io/Nello.html.
