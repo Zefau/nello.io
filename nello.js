@@ -1,3 +1,5 @@
+'use strict';
+
 const _request = require('request');
 const _fs = require('fs');
 const _http = require('http');
