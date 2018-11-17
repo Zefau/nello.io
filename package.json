@@ -23,7 +23,8 @@
   
   "readmeFilename": "README.md",
   "dependencies": {
-    "request": "^2.88.0",
+    "axios": "^0.18.0",
+    "querystring": "^0.2.0",
     "ical.js": "^1.2.2",
     "uuid": "^3.3.2"
   },
