@@ -1,11 +1,12 @@
 'use strict';
 
-const _request = require('request');
+const _request = require('axios');
+const _qs = require('querystring');
 const _fs = require('fs');
 const _http = require('http');
 const _https = require('https');
 const _ical = require('ical.js');
-const _uuidv4 = require('uuid/v4');
+//const _uuidv4 = require('uuid/v4');
 
 /**
  * Nello
@@ -13,7 +14,7 @@ const _uuidv4 = require('uuid/v4');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 0.4.5
+ * @version 0.5
  *
  */
 class Nello
@@ -37,31 +38,28 @@ class Nello
 	/**
 	 * Constructor.
 	 *
-	 * @param	{object}		connection					Object containing connection settings
-	 * @param	{string}		connection.clientId			Client ID
-	 * @param	{string}		connection.clientSecret		Client Secret
-	 * @param	{string}		connection.tokenType		Token Type
-	 * @param	{string}		connection.tokenAccess		Token Access
-	 * @param	{object}		connection.ssl				(optional) Object for SSL connection
-	 * @param	{string}		connection.ssl.key			(optional) Private Key for SSL connection
-	 * @param	{string}		connection.ssl.cert			(optional) Certificate for SSL connection
+	 * @param	{object}		token			(optional) Object containing token
+	 * @param	{string}		token.type		Token Type
+	 * @param	{string}		token.access	Token Access
+	 * @param	{object}		ssl				(optional) Object for SSL connection
+	 * @param	{string}		ssl.key			(optional) Private Key for SSL connection
+	 * @param	{string}		ssl.cert		(optional) Certificate for SSL connection
+	 * @param	{string}		ssl.ca			(optional) Certificate Authority for SSL connection
+	 * @param	{string}		ssl.selfSigned	(optional) Indicates whether SSL certificate is self signed (default to true)
 	 * @return	void
 	 *
 	 */
-    constructor(connection)
+    constructor(token = {}, ssl = null)
 	{
-		// initialise variables
-		this.clientId = connection.clientId;
-		this.clientSecret = connection.clientSecret;
+		// assign token
 		this.token = {
-			type: connection.tokenType,
-			access: connection.tokenAccess,
+			type: token.type || null,
+			access: token.access || null,
 		};
 		
-		// PLEASE NOTE: The nello API v1 does not seem to support SSL / HTTPS
-		//
-		this.isSecure = connection.ssl !== undefined && connection.ssl.key !== undefined && connection.ssl.cert !== undefined && connection.ssl.key !== '' && connection.ssl.cert !== '';
-		this.ssl = !this.isSecure ? null : {key: connection.ssl.key, cert: connection.ssl.cert};
+		// SSL
+		this.isSecure = ssl !== null && ssl.key !== undefined && ssl.cert !== undefined && ssl.key !== '' && ssl.cert !== '';
+		this.ssl = !this.isSecure ? null : {selfSigned: ssl.selfSigned || true, key: ssl.key, ca: ssl.ca || null, cert: ssl.cert};
 		
 		this.server = null;
     }
@@ -142,33 +140,86 @@ class Nello
 	 * @param	{string}		url				URL to be called
 	 * @param	{string}		method			(optional) Method to be used (GET, POST, PUT or DELETE), default is GET
 	 * @param	{object}		body			(optional) Body to be sent with the request, default is empty {}
-	 * @param	{object}		callback		(optional)
-	 * @param	{function}		callback.fct	(optional) Callback function to be invoked receiving -err, res, body- as param
-	 * @param	{function}		callback.return	(optional) Callback function to be invoked only receiving -{result: true|false, error: {..}}- as param
+	 * @param	{function}		callback		(optional) Callback function to be invoked only receiving -result: true|false, data|error: {..}- as params
+	 * @param	{object}		options			(optional) additional options to set, default is empty {}
 	 * @return	{object}						this
 	 *
 	 */
-	_req(url, method = "GET", callback = {}, body = {})
+	_req(url, method = "GET", callback = function() {}, body = {}, options = {})
 	{
-		_request({
-			uri: url,
-			method: method,
-			headers: {
-				"Authorization": this.token.type + " " + this.token.access
-			},
-			body: body,
-			json: true
-		},
-		callback.fct !== undefined ? callback.fct : function(err, res, body)
+		// validate token
+		if (!this.token.type || !this.token.access)
+			callback({result: false, error: 'No token set! Please generate token!'});
+		
+		// send request
+		else
 		{
-			if (body !== undefined && body.result !== undefined && body.result.success === true)
-				callback.return({result: true});
-			
-			else
-				callback.return({result: false, error: err});
-		});
+			_request(Object.assign(options, {
+				url: url,
+				method: method,
+				headers: {'Authorization': this.token.type + ' ' + this.token.access},
+				data: body,
+				//json: true
+			}))
+			.then(function(res)
+			{
+				if (res.data !== undefined && res.data.result !== undefined && res.data.result.success === true)
+					callback({result: true, body: res.data.data});
+				else
+					callback({result: false, error: 'Unknown error!'});
+			})
+			.catch(function(err)
+			{
+				callback({result: false, error: err.message});
+			});
+		}
 		
 		return this;
+	}
+	
+	/**
+	 * Get the current token.
+	 *
+	 * @param	void
+	 * @return	{string|boolean}				Current token or false if not token is available
+	 *
+	 */
+	async getToken(clientId = null, clientSecret = null)
+	{
+		return !this.token.type || !this.token.access ? await this._getToken(clientId, clientSecret) : this.token;
+	}
+	
+	/**
+	 * Generate / retrieve a new token.
+	 *
+	 * @param	{string}		clientId		Client ID
+	 * @param	{string}		clientSecret	Client Secret
+	 * @return	{string|boolean}				Retrieved token or false if token is not available
+	 *
+	 */
+	async _getToken(clientId, clientSecret)
+	{
+		if (!clientId || !clientSecret)
+			return false;
+		
+		try
+		{
+			const response = await _request.post(
+				'https://auth.nello.io/oauth/token/',
+				_qs.stringify({'grant_type': 'client_credentials', 'client_id': clientId, 'client_secret': clientSecret}),
+				{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
+			);
+			
+			if (response !== undefined && response.data !== undefined)
+				return this.token = {type: response.data.token_type || null, access: response.data.access_token || null};
+			
+			else
+				return false;
+		}
+		catch(err)
+		{
+			return false;
+		}
 	}
 	
 	/**
@@ -181,7 +232,7 @@ class Nello
 	 */
 	openDoor(locationId, callback = function() {})
 	{
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/open/", "PUT", {return: callback});
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/open/", "PUT", callback);
 	}
 	
 	/**
@@ -193,15 +244,7 @@ class Nello
 	 */
 	getLocations(callback)
 	{
-		return this._req("https://public-api.nello.io/v1/locations/", "GET", {fct: function(err, res, body)
-			{
-				if (body !== undefined && body.result !== undefined && body.result.success === true)
-					callback({result: true, locations: body.data});
-				
-				else
-					callback({result: false, error: err});
-			}
-		});
+		return this._req("https://public-api.nello.io/v1/locations/", "GET", function(res) {callback({result: res.result, locations: res.body})});
     }
 	
 	/**
@@ -215,23 +258,23 @@ class Nello
 	getTimeWindows(locationId, callback)
 	{
 		var that = this;
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/", "GET", {fct: function(err, res, body)
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/", "GET", function(res)
 			{
-				if (body !== undefined && body.result !== undefined && body.result.success === true)
+				if (res.result === true)
 				{
 					// convert ical-string to full data object
-					body.data.forEach(function(entry, i)
+					res.body.forEach(function(entry, i)
 					{
-						body.data[i].ical = that._getIcal(entry.ical);
+						res.body[i].ical = that._getIcal(entry.ical);
 					});
 					
-					callback({result: true, timeWindows: body.data});
+					callback({result: true, timeWindows: res.body});
 				}
 				
 				else
-					callback({result: false, error: err});
+					callback({result: false, error: res.error});
 			}
-		});
+		);
 	}
 	
 	/**
@@ -256,15 +299,12 @@ class Nello
 			callback({result: false, error: 'Wrong ical data provided! Missing BEGIN:VCALENDAR, END:VCALENDAR, BEGIN:VEVENT or END:VEVENT.'});
 		
 		// request
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/", "POST", {fct: function(err, res, body)
-			{
-				if (body !== undefined && body.result !== undefined && body.result.success === true)
-					callback({result: true, timeWindow: data.body});
-				
-				else
-					callback({result: false, error: err});
-			}
-		}, {'name': data.name, 'ical': data.ical});
+		return this._req(
+			"https://public-api.nello.io/v1/locations/" + locationId + "/tw/",
+			"POST",
+			function(res) {callback(Object.assign({result: true}, res.result === true ? {timeWindow: res.body} : {error: res.error}))},
+			{'name': data.name, 'ical': data.ical}
+		);
 	}
 	
 	/**
@@ -278,7 +318,7 @@ class Nello
 	 */
 	deleteTimeWindow(locationId, twId, callback = function() {})
 	{
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/" + twId + "/", "DELETE", {return: callback});
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/" + twId + "/", "DELETE", callback);
 	}
 	
 	/**
@@ -292,7 +332,7 @@ class Nello
 	unlisten(locationId, callback = function() {})
 	{
 		this.server = null;
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "DELETE", {return: callback});
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "DELETE", callback);
 	}
 	
 	/**
@@ -332,15 +372,16 @@ class Nello
 		// request
 		u.uri = u.url + ':' + u.port;
 		var that = this;
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "PUT", {fct: function(err, res, body)
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "PUT",
+			function(res)
 			{
-				if (body !== undefined && body.result !== undefined && body.result.success === true)
+				if (res.result === true)
 				{
 					if (that.isSecure === true)
 						that.server = _https.createServer(
 							{
 								key: that.ssl.key.indexOf('.') === -1 ? that.ssl.key : _fs.readFileSync(that.ssl.key),
-								//ca: that.ssl.ca.indexOf('.') === -1 ? that.ssl.ca : _fs.readFileSync(that.ssl.ca),
+								ca: that.ssl.ca !== null ? that.ssl.ca.indexOf('.') === -1 ? that.ssl.ca : _fs.readFileSync(that.ssl.ca) : null,
 								cert: that.ssl.cert.indexOf('.') === -1 ? that.ssl.cert : _fs.readFileSync(that.ssl.cert)
 							},
 							that._handler(callback)
@@ -353,9 +394,11 @@ class Nello
 				}
 				
 				else
-					callback({result: false, error: err});
-			}
-		}, {'url': u.uri, 'actions': actions});
+					callback({result: false, error: res.error});
+			},
+			{'url': u.uri, 'actions': actions},
+			that.isSecure ? {rejectUnauthorized: that.ssl.selfSigned} : {}
+		);
 	}
 }
 
