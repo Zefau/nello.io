@@ -24,7 +24,7 @@
 <label for="nav-trigger" class="overlay"></label>
 
 <nav>
-    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Nello.html">Nello</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_getIcal">_getIcal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_req">_req</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_setIcal">_setIcal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#createTimeWindow">createTimeWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#deleteTimeWindow">deleteTimeWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#getLocations">getLocations</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#getTimeWindows">getTimeWindows</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#listen">listen</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#openDoor">openDoor</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#unlisten">unlisten</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Classes</li><li class="nav-heading"><span class="nav-item-type type-class">C</span><span class="nav-item-name"><a href="Nello.html">Nello</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_getIcal">_getIcal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_getToken">_getToken</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_handler">_handler</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_req">_req</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#_setIcal">_setIcal</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#createTimeWindow">createTimeWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#deleteTimeWindow">deleteTimeWindow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#getLocations">getLocations</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#getTimeWindows">getTimeWindows</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#getToken">getToken</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#listen">listen</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#openDoor">openDoor</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Nello.html#unlisten">unlisten</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li>
 </nav>
 
 <div id="main">
@@ -45,6 +45,8 @@
         Nello
         </h2>
         
+            <div class="class-description">Nello</div>
+        
     
 </header>
 
@@ -55,15 +57,17 @@
 <div class="section-method">
 
     
+    <h2>Constructor</h2>
+    
 
-    <h4 class="name" id="Nello"><span class="type-signature"></span>new Nello<span class="signature">(connection)</span><span class="type-signature"></span></h4>
+    <h4 class="name" id="Nello"><span class="type-signature"></span>new Nello<span class="signature">(token, ssl)</span><span class="type-signature"></span></h4>
 
     
 
 
 
 <div class="description">
-    Constructor.
+    Javascript implementation of the nello.io API
 </div>
 
 
@@ -73,7 +77,8 @@
 <dl class="details">
 
     
-
+    <dt class="tag-version">Version:</dt>
+    <dd class="tag-version"><ul class="dummy"><li>0.5</li></ul></dd>
     
 
     
@@ -91,7 +96,19 @@
     
 
     
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>Zefau &lt;https://github.com/Zefau/></li>
+        </ul>
+    </dd>
+    
 
+    
+
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li>MIT License</li></ul></dd>
     
 
     
@@ -99,7 +116,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line45">line 45</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line20">line 20</a>
     </li></ul></dd>
     
 
@@ -143,7 +160,7 @@
 
         <tr>
             
-                <td class="name"><code>connection</code></td>
+                <td class="name"><code>token</code></td>
             
 
             <td class="type">
@@ -160,7 +177,7 @@
             
 
             <td class="description last">
-                Object containing connection settings
+                (optional) Object containing token
                 
                     
 
@@ -186,59 +203,7 @@
 
         <tr>
             
-                <td class="name"><code>clientId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Client ID
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>clientSecret</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>string</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                Client Secret
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>tokenType</code></td>
+                <td class="name"><code>type</code></td>
             
 
             <td class="type">
@@ -264,7 +229,7 @@
 
         <tr>
             
-                <td class="name"><code>tokenAccess</code></td>
+                <td class="name"><code>access</code></td>
             
 
             <td class="type">
@@ -295,6 +260,161 @@
         </tr>
 
     
+
+        <tr>
+            
+                <td class="name"><code>ssl</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                (optional) Object for SSL connection
+                
+                    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                (optional) Private Key for SSL connection
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cert</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                (optional) Certificate for SSL connection
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>ca</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                (optional) Certificate Authority for SSL connection
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>selfSigned</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                (optional) Indicates whether SSL certificate is self signed (default to true)
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+                
+            </td>
+        </tr>
+
+    
     </tbody>
 </table>
 
@@ -310,19 +430,6 @@
 
 
 
-
-<div class="section-returns">
-<h5>Returns:</h5>
-
-        
-
-
-<div class="param-desc">
-    void
-</div>
-
-    
-</div>
 
 
 
@@ -394,7 +501,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line66">line 66</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line75">line 75</a>
     </li></ul></dd>
     
 
@@ -518,7 +625,396 @@
 
     
 
-    <h4 class="name" id="_req"><span class="type-signature"></span>_req<span class="signature">(url, method, body, callback)</span><span class="type-signature"> &rarr; {object}</span></h4>
+    <h4 class="name" id="_getToken"><span class="type-signature">(async) </span>_getToken<span class="signature">(clientId, clientSecret)</span><span class="type-signature"> &rarr; {string|boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Generate / retrieve a new token.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line200">line 200</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>clientId</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Client ID
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>clientSecret</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>string</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                Client Secret
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>boolean</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    Retrieved token or false if token is not available
+</div>
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="_handler"><span class="type-signature"></span>_handler<span class="signature">(request, response, callback)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    Handle HTTP / HTTPS response.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line97">line 97</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>request</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>response</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>object</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                (optional) Callback function to be invoked
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+
+<div class="param-desc">
+    void
+</div>
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id="_req"><span class="type-signature"></span>_req<span class="signature">(url, method, body, callback, options)</span><span class="type-signature"> &rarr; {object}</span></h4>
 
     
 
@@ -561,7 +1057,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line106">line 106</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line148">line 148</a>
     </li></ul></dd>
     
 
@@ -705,6 +1201,36 @@
             <td class="type">
             
                 
+<span class="param-type"><code>function</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last">
+                (optional) Callback function to be invoked only receiving -result: true|false, data|error: {..}- as params
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
 <span class="param-type"><code>object</code></span>
 
 
@@ -720,84 +1246,7 @@
             
 
             <td class="description last">
-                (optional)
-                
-                    
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>fct</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>function</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                (optional) Callback function to be invoked receiving -err, res, body- as param
-                
-            </td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>return</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type"><code>function</code></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last">
-                (optional) Callback function to be invoked only receiving -{result: true|false, error: {..}}- as param
-                
-            </td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
+                (optional) additional options to set, default is empty {}
                 
             </td>
         </tr>
@@ -896,7 +1345,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line87">line 87</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line130">line 130</a>
     </li></ul></dd>
     
 
@@ -1063,7 +1512,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line203">line 203</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line291">line 291</a>
     </li></ul></dd>
     
 
@@ -1355,7 +1804,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line234">line 234</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line319">line 319</a>
     </li></ul></dd>
     
 
@@ -1567,7 +2016,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line149">line 149</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line245">line 245</a>
     </li></ul></dd>
     
 
@@ -1727,7 +2176,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line170">line 170</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line258">line 258</a>
     </li></ul></dd>
     
 
@@ -1870,6 +2319,164 @@
 
     
 
+    <h4 class="name" id="getToken"><span class="type-signature">(async) </span>getToken<span class="signature">(void)</span><span class="type-signature"> &rarr; {string|boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    Get the current token.
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line187">line 187</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>void</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>string</code></span>
+|
+
+<span class="param-type"><code>boolean</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    Current token or false if not token is available
+</div>
+
+    
+</div>
+
+
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
     <h4 class="name" id="listen"><span class="type-signature"></span>listen<span class="signature">(locationId, uri, actions, callback)</span><span class="type-signature"> &rarr; {object}</span></h4>
 
     
@@ -1913,7 +2520,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line265">line 265</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line350">line 350</a>
     </li></ul></dd>
     
 
@@ -2231,7 +2838,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line137">line 137</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line233">line 233</a>
     </li></ul></dd>
     
 
@@ -2417,7 +3024,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line247">line 247</a>
+        <a href="nello.js.html">nello.js</a>, <a href="nello.js.html#line332">line 332</a>
     </li></ul></dd>
     
 
@@ -2572,7 +3179,7 @@
 <br class="clear">
 
 <footer>
-    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Nov 03 2018 10:31:24 GMT+0100 (CET) using the Minami theme.
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Nov 17 2018 15:36:19 GMT+0100 (CET) using the Minami theme.
 </footer>
 
 <script>prettyPrint();</script>
