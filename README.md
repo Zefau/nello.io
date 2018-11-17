@@ -18,14 +18,25 @@ The documentation for this javascript implementation of the nello.io API can be 
 To use the API, add nello to the dependencies of your project in package.json or install it using npm
 ```npm install nello```.
 
+### Generate token (only if you do not have a token)
 Get Client ID and Client Secret from https://auth.nello.io/admin and generate a token at https://nelloauth.docs.apiary.io/#reference/0/token/create-a-new-token-client-credentials.
 
-Provide the credentials to the Nello class / constructor:
+Get an empty instance of the constructor and call getToken() with the required credentials:
 
 ```js
 const Nello = require('nello');
 
-var nello = nello = new Nello({'clientId': '...', 'clientSecret': '...', 'tokenType': '...', 'tokenAccess': '...');
+var nello = new Nello();
+
+// get token
+nello.getToken(clientId, clientSecret).then((token) => log(JSON.stringify(token))); // set this to your client ID and client Secret
+```
+
+### Use nello API to get locations or open door
+```js
+const Nello = require('nello');
+
+var nello = new Nello({'type': '...', 'access': '...'});
 
 // get locations
 nello.getLocations(function(res) { ... });
@@ -41,14 +52,25 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
+### 0.5 (2018-11-17)
+- (zefau) added HTTPs support for webhooks (including self-signed certificates)
+- (zefau) added support for token generation using client ID and client secret
+
 ### 0.4.5 (2018-11-04)
-- (zefau) added HTTPs support for webhooks (which however does not seem to be supported by the Nello API)
+- (zefau) added HTTPs support for webhooks ~~(which however does not seem to be supported by the Nello API)~~
 
 ### 0.4.3 / 0.4.4 (2018-11-03)
 - (zefau) fixed invalid module exports
 
 ### 0.4.0 (2018-11-03)
 - (zefau) initial release
+
+
+## API Documentation (using JSDoc)
+You may update the API documentation using JSDoc (https://github.com/jsdoc3/jsdoc#installation-and-usage):
+```
+jsdoc nello.js -d docs --template ../minami
+```
 
 
 ## License
