@@ -52,7 +52,10 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
-### 0.5 (2018-11-17)
+### 0.5.2 (2018-11-17)
+- (zefau) replace Promises (async/await) with callback to be backward compatibility with Node.js v6 (and v4)
+
+### 0.5.0 (2018-11-17)
 - (zefau) added HTTPs support for webhooks (including self-signed certificates)
 - (zefau) added support for token generation using client ID and client secret
 
