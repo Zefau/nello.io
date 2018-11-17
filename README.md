@@ -28,8 +28,11 @@ const Nello = require('nello');
 
 var nello = new Nello();
 
-// get token
-nello.getToken(clientId, clientSecret).then((token) => log(JSON.stringify(token))); // set this to your client ID and client Secret
+// set new token
+nello.setToken(clientId, clientSecret, function(token) // set clientId and clientSecret according to your credentials
+{
+    log(JSON.stringify(token));
+})
 ```
 
 ### Use nello API to get locations or open door
@@ -53,7 +56,7 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 ## Changelog
 
 ### 0.5.2 (2018-11-17)
-- (zefau) replace Promises (async/await) with callback to be backward compatibility with Node.js v6 (and v4)
+- (zefau) replaced Promises (async/await) with callback to be backward compatibility with Node.js v6 (and v4)
 
 ### 0.5.0 (2018-11-17)
 - (zefau) added HTTPs support for webhooks (including self-signed certificates)
