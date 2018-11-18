@@ -55,6 +55,9 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
+### 0.5.3 (2018-11-18)
+- (zefau) Improved compatibility with Node.js v6 (and v4)
+
 ### 0.5.2 (2018-11-17)
 - (zefau) replaced Promises (async/await) with callback to be backward compatibility with Node.js v6 (and v4)
 
