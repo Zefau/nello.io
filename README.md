@@ -55,6 +55,9 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
+### 0.5.4 (2018-11-18)
+- (zefau) Bug fixes in Constructor
+
 ### 0.5.3 (2018-11-18)
 - (zefau) Improved compatibility with Node.js v6 (and v4)
 
