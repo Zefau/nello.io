@@ -14,7 +14,7 @@ const _ical = require('ical.js');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 0.5
+ * @version 0.5.3
  *
  */
 class Nello
@@ -49,7 +49,7 @@ class Nello
 	 * @return	void
 	 *
 	 */
-    constructor(token = {}, ssl = null)
+    constructor(token, ssl)
 	{
 		// assign token
 		this.token = {
@@ -100,9 +100,9 @@ class Nello
 		{
 			var body = [];
 			request
-				.on('error', (err) => {callback({result: false, error: err})})
-				.on('data', (chunk) => {body.push(chunk)})
-				.on('end', () =>
+				.on('error', function(err) {callback({result: false, error: err})})
+				.on('data', function(chunk) {body.push(chunk)})
+				.on('end', function()
 				{
 					var result = null;
 					try {
@@ -145,7 +145,7 @@ class Nello
 	 * @return	{object}						this
 	 *
 	 */
-	_req(url, method = "GET", callback = function() {}, body = {}, options = {})
+	_req(url, method, callback, body, options)
 	{
 		// validate token
 		if (!this.token.type || !this.token.access)
@@ -154,11 +154,11 @@ class Nello
 		// send request
 		else
 		{
-			_request(Object.assign(options, {
+			_request(Object.assign(options || {}, {
 				url: url,
-				method: method,
+				method: method || 'GET',
 				headers: {'Authorization': this.token.type + ' ' + this.token.access},
-				data: body,
+				data: body || {},
 				//json: true
 			}))
 			.then(function(res)
@@ -178,48 +178,53 @@ class Nello
 	}
 	
 	/**
-	 * Get the current token.
+	 * Get the current token or generate a new one if none is existing.
 	 *
-	 * @param	void
+	 * @param	none
 	 * @return	{string|boolean}				Current token or false if not token is available
 	 *
 	 */
-	async getToken(clientId = null, clientSecret = null)
+	getToken()
 	{
-		return !this.token.type || !this.token.access ? await this._getToken(clientId, clientSecret) : this.token;
+		return !this.token.type || !this.token.access ? false : this.token;
 	}
 	
 	/**
-	 * Generate / retrieve a new token.
+	 * Retrieve a new token.
 	 *
 	 * @param	{string}		clientId		Client ID
 	 * @param	{string}		clientSecret	Client Secret
-	 * @return	{string|boolean}				Retrieved token or false if token is not available
+	 * @param	{function}		callback		Callback function to be invoked
+	 * @return	{object}						this
 	 *
 	 */
-	async _getToken(clientId, clientSecret)
+	setToken(clientId, clientSecret, callback)
 	{
 		if (!clientId || !clientSecret)
-			return false;
+			callback({result: false, error: 'No Client ID / Client Secret provided!'});
 		
-		try
+		var that = this;
+		_request.post(
+			'https://auth.nello.io/oauth/token/',
+			_qs.stringify({'grant_type': 'client_credentials', 'client_id': clientId, 'client_secret': clientSecret}),
+			{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
+		)
+		.then(function(res)
 		{
-			const response = await _request.post(
-				'https://auth.nello.io/oauth/token/',
-				_qs.stringify({'grant_type': 'client_credentials', 'client_id': clientId, 'client_secret': clientSecret}),
-				{headers: {'Content-Type': 'application/x-www-form-urlencoded'}}
-			);
-			
-			if (response !== undefined && response.data !== undefined)
-				return this.token = {type: response.data.token_type || null, access: response.data.access_token || null};
-			
+			if (res.status === 200)
+			{
+				that.token = {type: res.data.token_type || null, access: res.data.access_token || null};
+				callback({result: true, token: that.token});
+			}
 			else
-				return false;
-		}
-		catch(err)
+				callback({result: false, error: 'Unknown error!'});
+		})
+		.catch(function(err)
 		{
-			return false;
-		}
+			callback({result: false, error: err.message});
+		});
+		
+		return this;
 	}
 	
 	/**
@@ -230,9 +235,9 @@ class Nello
 	 * @return	{object}						this
 	 *
 	 */
-	openDoor(locationId, callback = function() {})
+	openDoor(locationId, callback)
 	{
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/open/", "PUT", callback);
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/open/", "PUT", callback || function() {});
 	}
 	
 	/**
@@ -244,7 +249,7 @@ class Nello
 	 */
 	getLocations(callback)
 	{
-		return this._req("https://public-api.nello.io/v1/locations/", "GET", function(res) {callback({result: res.result, locations: res.body})});
+		return this._req("https://public-api.nello.io/v1/locations/", "GET", function(res) {callback({result: res.result, locations: res.body, error: res.error})});
     }
 	
 	/**
@@ -288,7 +293,7 @@ class Nello
 	 * @return	{object}							this
 	 *
 	 */
-	createTimeWindow(locationId, data, callback = function() {})
+	createTimeWindow(locationId, data, callback)
 	{
 		// convert ical to object
 		if (data.ical !== 'string')
@@ -316,9 +321,9 @@ class Nello
 	 * @return	{object}						this
 	 *
 	 */
-	deleteTimeWindow(locationId, twId, callback = function() {})
+	deleteTimeWindow(locationId, twId, callback)
 	{
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/" + twId + "/", "DELETE", callback);
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/" + twId + "/", "DELETE", callback || function() {});
 	}
 	
 	/**
@@ -329,10 +334,10 @@ class Nello
 	 * @return	{object}							this
 	 *
 	 */
-	unlisten(locationId, callback = function() {})
+	unlisten(locationId, callback)
 	{
 		this.server = null;
-		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "DELETE", callback);
+		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "DELETE", callback || function() {});
 	}
 	
 	/**
@@ -347,7 +352,7 @@ class Nello
 	 * @return	{object}							this
 	 *
 	 */
-	listen(locationId, uri, callback, actions = ['swipe', 'geo', 'tw', 'deny'])
+	listen(locationId, uri, callback, actions)
 	{
 		// convert uri to object
 		if (typeof uri === 'string')
@@ -396,7 +401,7 @@ class Nello
 				else
 					callback({result: false, error: res.error});
 			},
-			{'url': u.uri, 'actions': actions},
+			{'url': u.uri, 'actions': actions || ['swipe', 'geo', 'tw', 'deny']},
 			that.isSecure ? {rejectUnauthorized: that.ssl.selfSigned} : {}
 		);
 	}
