@@ -14,7 +14,7 @@ const _ical = require('ical.js');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 0.5.3
+ * @version 0.5.4
  *
  */
 class Nello
@@ -52,13 +52,10 @@ class Nello
     constructor(token, ssl)
 	{
 		// assign token
-		this.token = {
-			type: token.type || null,
-			access: token.access || null,
-		};
+		this.token = token === undefined || token.type === undefined || token.access === undefined ? false : {type: token.type, access: token.access};
 		
 		// SSL
-		this.isSecure = ssl !== null && ssl.key !== undefined && ssl.cert !== undefined && ssl.key !== '' && ssl.cert !== '';
+		this.isSecure = ssl !== undefined && ssl.key !== undefined && ssl.cert !== undefined && ssl.key !== '' && ssl.cert !== '';
 		this.ssl = !this.isSecure ? null : {selfSigned: ssl.selfSigned || true, key: ssl.key, ca: ssl.ca || null, cert: ssl.cert};
 		
 		this.server = null;
