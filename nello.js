@@ -13,7 +13,7 @@ const _ical = require('ical.js');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 0.5.4
+ * @version 1.0.0
  *
  */
 class Nello
