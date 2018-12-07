@@ -6,7 +6,6 @@ const _fs = require('fs');
 const _http = require('http');
 const _https = require('https');
 const _ical = require('ical.js');
-//const _uuidv4 = require('uuid/v4');
 
 /**
  * Nello
@@ -117,18 +116,64 @@ class Nello
 	}
 	
 	/**
-	 * Converts an ical object to a string with the relevant data. See https://www.npmjs.com/package/jsical for more information.
+	 * Try to parse string to a date-time usable for ical.
 	 *
-	 * @see		{@link https://www.npmjs.com/package/jsical|jsical -Javascript parser for rfc5545-} for more information on the returned value
-	 * @param	{ical}			ical			Ical object to be converted to string
+	 * @param	{string}			str			Date-Time string to be parsed
+	 * @return	{string}						Converted ical usable datetime string, format YYYYMMDDTHHMMSSZ
+	 *
+	 */
+	_getDateTime(str)
+	{
+		str = str.toString();
+		var date = null;
+		
+		// check if format is correct already
+		if (str.charAt(8) === 'T' && str.charAt(15) === 'Z')
+			return str;
+		
+		// check for unix timestamp or try to parse any other given format
+		var timestamp = parseInt(str)*1000;
+		date = timestamp > Date.now()-3600 ? new Date(timestamp) : new Date(str);
+		
+		// check if date is valid
+		if (date.getTime() > Date.now()-3600)
+			return date.getFullYear()+('0'+(date.getMonth()+1)).substr(-2)+('0'+date.getDate()).substr(-2)+'T'+('0'+date.getHours()).substr(-2)+('0'+date.getMinutes()).substr(-2)+('0'+date.getSeconds()).substr(-2)+'Z';
+		
+		// nothing left
+		return false;
+	}
+	
+	/**
+	 * Converts an ical object to a string with the relevant data.
+	 *
+	 * @param	{object}			data		Ical data
 	 * @return	{string}						Converted ical string
 	 *
 	 */
-	_setIcal(data)
+	_setIcal(data, cb)
 	{
-		// to be implemented
+		var that = this;
+		var ical = ['DTSTAMP:' + that._getDateTime(Date.now()/1000)];
 		
-		return '';
+		// convert datetime for start / end
+		var value;
+		['DTSTAMP', 'DTSTART', 'DTEND'].forEach(function(key)
+		{
+			value = data[key] === undefined ? false : that._getDateTime(data[key]);
+			if (value === false) return false;
+			
+			ical.push(key + ':' + value);
+		});
+		
+		// assign frequency
+		if (data['RRULE'] !== undefined)
+			ical.push('RRULE:' + (typeof data['RRULE'] === 'string' ? data['RRULE'] : (data['RRULE']['FREQ'] + (data['RRULE']['UNTIL'] !== undefined ? ';' + that._getDateTime(data['RRULE']['UNTIL']) : ''))));
+		
+		// assign summary
+		ical.push('SUMMARY:' + (data.summary !== undefined ? data.summary : (data.name !== undefined ? data.name : '')));
+		
+		// assemble
+		return ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:io.nello', 'BEGIN:VEVENT'].concat(ical, ['END:VEVENT', 'END:VCALENDAR']).join('\r\n') + '\r\n';
 	}
 	
 	/**
@@ -282,29 +327,35 @@ class Nello
 	/**
 	 * Creates a time window.
 	 *
-	 * @param	{string}		locationId			ID of the location
-	 * @param	{object}		data				Data for the time window
-	 * @param	{string}		data.name			Name of the time window
-	 * @param	{string|object}	data.ical			Ical data of the time window
-	 * @param	{function}		callback			(optional) Callback function to be invoked
-	 * @return	{object}							this
+	 * @param	{string}		locationId				ID of the location
+	 * @param	{object}		data					Data for the time window
+	 * @param	{string}		data.name				Name of the time window
+	 * @param	{string|object}	data.ical				Ical data of the time window
+	 * @param	{string}		data.ical.DTSTAMP		Date-Time, format YYYYMMDDTHHMMSSZ
+	 * @param	{string}		data.ical.DTSTART		Date-Time, format YYYYMMDDTHHMMSSZ
+	 * @param	{string}		data.ical.DTEND			Date-Time, format YYYYMMDDTHHMMSSZ
+	 * @param	{string|object}	data.ical.RRULE			Frequency Rule and Until Date-Time
+	 * @param	{string}		data.ical.RRULE.FREQ	Frequency Rule
+	 * @param	{string}		data.ical.RRULE.UNTIL	Date-Time, format YYYYMMDDTHHMMSSZ
+	 * @param	{function}		callback				(optional) Callback function to be invoked
+	 * @return	{object}								this
 	 *
 	 */
 	createTimeWindow(locationId, data, callback)
 	{
 		// convert ical to object
-		if (data.ical !== 'string')
-			data.ical = this._setIcal(Object.assign(data.ical, {name: data.name}));
+		if (typeof data.ical !== 'string')
+			data.ical = this._setIcal(Object.assign(data.ical, {name: data.name}), callback);
 		
 		// roughly verify ical data
-		else if (data.ical === 'string' && (data.ical.indexOf('BEGIN:VCALENDAR') === -1 || data.ical.indexOf('END:VCALENDAR') === -1 || data.ical.indexOf('BEGIN:VEVENT') === -1 || data.ical.indexOf('END:VEVENT') === -1))
+		if (data.ical === false || (typeof data.ical === 'string' && (data.ical.indexOf('BEGIN:VCALENDAR') === -1 || data.ical.indexOf('END:VCALENDAR') === -1 || data.ical.indexOf('BEGIN:VEVENT') === -1 || data.ical.indexOf('END:VEVENT') === -1)))
 			callback({result: false, error: 'Wrong ical data provided! Missing BEGIN:VCALENDAR, END:VCALENDAR, BEGIN:VEVENT or END:VEVENT.'});
 		
 		// request
 		return this._req(
 			"https://public-api.nello.io/v1/locations/" + locationId + "/tw/",
 			"POST",
-			function(res) {callback(Object.assign({result: true}, res.result === true ? {timeWindow: res.body} : {error: res.error}))},
+			function(res) {callback(res.result === true ? {result: true, timeWindow: res.body} : {result: false, error: res.error})},
 			{'name': data.name, 'ical': data.ical}
 		);
 	}
@@ -321,6 +372,34 @@ class Nello
 	deleteTimeWindow(locationId, twId, callback)
 	{
 		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/" + twId + "/", "DELETE", callback || function() {});
+	}
+	
+	/**
+	 * Deletes all time windows of a location.
+	 *
+	 * @param	{string}		locationId		ID of the location
+	 * @param	{function}		callback		(optional) Callback function to be invoked (will be invoked for every deleted time window)
+	 * @return	{object}						this
+	 *
+	 */
+	deleteAllTimeWindows(locationId, callback)
+	{
+		var that = this;
+		this.getTimeWindows(locationId, function(res)
+		{
+			if (res.result === true)
+			{
+				res.timeWindows.forEach(function(tw) {
+					that._req("https://public-api.nello.io/v1/locations/" + locationId + "/tw/" + tw.id + "/", "DELETE", callback || function() {});
+				});
+			}
+			
+			// error
+			else
+				callback({result: false, error: 'Could not retrieve time windows'});
+		});
+		
+		return this;
 	}
 	
 	/**
