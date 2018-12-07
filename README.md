@@ -55,6 +55,10 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
+### 1.0.0 (2018-12-07)
+- (zefau) added function deleteAllTimeWindows(), to delete all time windows of a specific location
+- (zefau) added / fixed function createTimeWindow(), to create a new time window for a specific location
+
 ### 0.5.4 (2018-11-18)
 - (zefau) Bug fixes in Constructor
 
