@@ -13,7 +13,7 @@ const _ical = require('ical.js');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 1.0.0
+ * @version 1.1.0
  *
  */
 class Nello
@@ -410,6 +410,7 @@ class Nello
 	 * @return	{object}							this
 	 *
 	 */
+	detach(locationId, callback) {this.unlisten(locationId, callback)}
 	unlisten(locationId, callback)
 	{
 		this.server = null;
@@ -417,69 +418,79 @@ class Nello
 	}
 	
 	/**
-	 * Subscribe / listen to events (add a webhook)
+	 * Get port from URL
+	 *
+	 * @param	{string}			url				URL to retrieve port from
+	 * @return	{integer							Retrieved Port
+	 * @see		https://stackoverflow.com/questions/29839793/getting-port-from-url-string-using-javascript#answer-29841744
+	 *
+	 */
+	_getPort(url)
+	{
+		var regex = /^(http|https):\/\/[^:\/]+(?::(\d+))?/;
+		var match = url.match(regex);
+		
+		return match === null ? null : (match[2] ? match[2] : {http: "80", https: "443"}[match[1]]);
+	}
+	
+	/**
+	 * Attach webhook / listener
 	 *
 	 * @param	{string}			locationId		ID of the location
-	 * @param	{object|string}		uri				External URL including port (e.g. www.domain.com:port) of the webhook that the adapter is listening on
-	 * @param	{string}			uri.url			External URL of the webhook that the adapter is listening on
-	 * @param	{integer}			uri.port		External Port of the webhook that the adapter is listening on
-	 * @param	{array}				actions			(optional) Actions to listen to (defaults to ['swipe', 'geo', 'tw', 'deny'])
+	 * @param	{string}			url				External URL including port (e.g. www.domain.com:port) of the webhook that the adapter is listening on
 	 * @param	{function}			callback		Callback function to be invoked
+	 * @param	{array}				actions			(optional) Actions to listen to (defaults to ['swipe', 'geo', 'tw', 'deny'])
 	 * @return	{object}							this
 	 *
 	 */
-	listen(locationId, uri, callback, actions)
+	attach(locationId, url, callback, actions)
 	{
-		// convert uri to object
-		if (typeof uri === 'string')
-		{
-			if (uri.indexOf(':') === -1)
-				callback({result: false, error: 'Invalid url specified! Please specify port using ":", e.g. domain.com:PORT!'});
-			
-			else
-				var u = {
-					ssl: this.isSecure,
-					url: (this.isSecure ? 'https://' : 'http://') + uri.substr(0, uri.indexOf(':')).replace(/http:\/\//gi, '').replace(/https:\/\//gi, ''),
-					port: parseInt(uri.substr(uri.indexOf(':')+1))
-				};
-		}
-		else
-			var u = {
-				ssl: this.isSecure,
-				url: (this.isSecure ? 'https://' : 'http://') + uri.substr(0, uri.indexOf(':')).replace(/http:\/\//gi, '').replace(/https:\/\//gi, ''),
-				port: parseInt(url.port)
-			};
+		// preprend http / https
+		if (url.indexOf('http') === -1)
+			url = (this.isSecure === true ? 'https://' : 'http://') + url;
 		
 		// request
-		u.uri = u.url + ':' + u.port;
 		var that = this;
 		return this._req("https://public-api.nello.io/v1/locations/" + locationId + "/webhook/", "PUT",
 			function(res)
 			{
 				if (res.result === true)
-				{
-					if (that.isSecure === true)
-						that.server = _https.createServer(
-							{
-								key: that.ssl.key.indexOf('.') === -1 ? that.ssl.key : _fs.readFileSync(that.ssl.key),
-								ca: that.ssl.ca !== null ? that.ssl.ca.indexOf('.') === -1 ? that.ssl.ca : _fs.readFileSync(that.ssl.ca) : null,
-								cert: that.ssl.cert.indexOf('.') === -1 ? that.ssl.cert : _fs.readFileSync(that.ssl.cert)
-							},
-							that._handler(callback)
-						).listen(u.port);
-					
-					else
-						that.server = _http.createServer(that._handler(callback)).listen(u.port);
-					
-					callback({result: true, uri: u});
-				}
+					callback({result: true, url: url});
 				
 				else
 					callback({result: false, error: res.error});
 			},
-			{'url': u.uri, 'actions': actions || ['swipe', 'geo', 'tw', 'deny']},
+			{'url': url, 'actions': actions || ['swipe', 'geo', 'tw', 'deny']},
 			that.isSecure ? {rejectUnauthorized: that.ssl.selfSigned} : {}
 		);
+	}
+	
+	/**
+	 * Listen to events
+	 *
+	 * @param	{integer}			port			Port to listen on
+	 * @param	{function}			callback		Callback function to be invoked
+	 * @return	{object}							this
+	 *
+	 */
+	listen(port, callback)
+	{
+		var port = parseInt(port);
+		if (isNaN(port))
+			callback({result: false, error: 'Wrong port specified.'});
+		
+		if (that.isSecure === true)
+			that.server = _https.createServer(
+				{
+					key: that.ssl.key.indexOf('.') === -1 ? that.ssl.key : _fs.readFileSync(that.ssl.key),
+					ca: that.ssl.ca !== null ? that.ssl.ca.indexOf('.') === -1 ? that.ssl.ca : _fs.readFileSync(that.ssl.ca) : null,
+					cert: that.ssl.cert.indexOf('.') === -1 ? that.ssl.cert : _fs.readFileSync(that.ssl.cert)
+				},
+				that._handler(callback)
+			).listen(port);
+		
+		else
+			that.server = _http.createServer(that._handler(callback)).listen(port);
 	}
 }
 
