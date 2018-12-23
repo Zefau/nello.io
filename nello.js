@@ -13,7 +13,7 @@ const _ical = require('ical.js');
  * @description Javascript implementation of the nello.io API
  * @author Zefau <https://github.com/Zefau/>
  * @license MIT License
- * @version 1.1.0
+ * @version 1.1.1
  *
  */
 class Nello
@@ -54,8 +54,8 @@ class Nello
 		this.token = token === undefined || token.type === undefined || token.access === undefined ? false : {type: token.type, access: token.access};
 		
 		// SSL
-		this.isSecure = ssl !== undefined && ssl.key !== undefined && ssl.cert !== undefined && ssl.key !== '' && ssl.cert !== '';
-		this.ssl = !this.isSecure ? null : {selfSigned: ssl.selfSigned || true, key: ssl.key, ca: ssl.ca || null, cert: ssl.cert};
+		this.isSecure = ssl !== undefined && ssl.key !== undefined && ssl.cert !== undefined && ssl.key !== null && ssl.cert !== null && ssl.key !== '' && ssl.cert !== '';
+		this.ssl = !this.isSecure ? {selfSigned: null, key: null, ca: null, cert: null} : {selfSigned: ssl.selfSigned || true, key: ssl.key, ca: ssl.ca || null, cert: ssl.cert};
 		
 		this.server = null;
     }
@@ -461,7 +461,7 @@ class Nello
 					callback({result: false, error: res.error});
 			},
 			{'url': url, 'actions': actions || ['swipe', 'geo', 'tw', 'deny']},
-			that.isSecure ? {rejectUnauthorized: that.ssl.selfSigned} : {}
+			that.isSecure !== false ? {rejectUnauthorized: !that.ssl.selfSigned} : {}
 		);
 	}
 	
@@ -479,8 +479,11 @@ class Nello
 		if (isNaN(port))
 			callback({result: false, error: 'Wrong port specified.'});
 		
-		if (that.isSecure === true)
-			that.server = _https.createServer(
+		// open server and listen for events
+		var that = this;
+		if (this.isSecure === true)
+		{
+			this.server = _https.createServer(
 				{
 					key: that.ssl.key.indexOf('.') === -1 ? that.ssl.key : _fs.readFileSync(that.ssl.key),
 					ca: that.ssl.ca !== null ? that.ssl.ca.indexOf('.') === -1 ? that.ssl.ca : _fs.readFileSync(that.ssl.ca) : null,
@@ -488,9 +491,9 @@ class Nello
 				},
 				that._handler(callback)
 			).listen(port);
-		
+		}
 		else
-			that.server = _http.createServer(that._handler(callback)).listen(port);
+			this.server = _http.createServer(that._handler(callback)).listen(port);
 	}
 }
 
