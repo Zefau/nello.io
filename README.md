@@ -55,6 +55,9 @@ You may find a full implemented example at https://github.com/Zefau/ioBroker.nel
 
 ## Changelog
 
+### 1.1.1 (2018-12-23)
+- (zefau) fixed bug in function listen() preventing to open the server to listen
+
 ### 1.1.0 (2018-12-22)
 - (zefau) split function listen() into attach() \[ attach webhook to url ] and listen() \[ listen on specified port for nello events ]
 - (zefau) added function detach(), which is alias to unlisten()
