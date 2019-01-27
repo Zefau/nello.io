@@ -26,80 +26,68 @@ Get an empty instance of the constructor and call getToken() with the required c
 ```js
 const Nello = require('nello');
 
-var nello = new Nello();
+let nello = new Nello.auth(clientId, clientSecret);
 
-// set new token
-nello.setToken(clientId, clientSecret, function(token) // set clientId and clientSecret according to your credentials
+nello.retrieveToken().then(function(token)
 {
+    // use token ...
     log(JSON.stringify(token));
 })
+.catch(function(e)
+{
+    // error fetching token
+    log(JSON.stringify(e.message));
+});
 ```
 
 ### Use nello API to get locations or open door
 ```js
 const Nello = require('nello');
 
-var nello = new Nello({'type': '...', 'access': '...'});
+let nello = new Nello.device(token);
 
-// get locations
-nello.getLocations(function(res) { ... });
+/*
+ * Get locations
+ */
+nello.getLocations().then(function(locations)
+{
+    // use locations ...
+    log(JSON.stringify(locations));
+});
 
 // open door of a location with locationId
-nello.openDoor(locationId);
+nello.getLocation(locationId).then(function(location)
+{
+    // open door
+    location.action.openDoor();
+});
 ```
 
 
 ## Example
-You may find a full implemented example at https://github.com/Zefau/ioBroker.nello (respectively https://github.com/Zefau/ioBroker.nello/blob/master/main.js).
+You may find a full implemented example at [https://github.com/Zefau/ioBroker.nello](https://github.com/Zefau/ioBroker.nello).
 
 
 ## Changelog
 
-### 1.1.1 (2018-12-23)
-- (zefau) fixed bug in function listen() preventing to open the server to listen
+### 2.0.0 (2019-01-29)
+- (zefau) Changed API implementation to use promises (via [request-promise](https://www.npmjs.com/package/request-promise))
 
-### 1.1.0 (2018-12-22)
-- (zefau) split function listen() into attach() \[ attach webhook to url ] and listen() \[ listen on specified port for nello events ]
-- (zefau) added function detach(), which is alias to unlisten()
-
-### 1.0.0 (2018-12-07)
-- (zefau) added function deleteAllTimeWindows(), to delete all time windows of a specific location
-- (zefau) added / fixed function createTimeWindow(), to create a new time window for a specific location
-
-### 0.5.4 (2018-11-18)
-- (zefau) Bug fixes in Constructor
-
-### 0.5.3 (2018-11-18)
-- (zefau) Improved compatibility with Node.js v6 (and v4)
-
-### 0.5.2 (2018-11-17)
-- (zefau) replaced Promises (async/await) with callback to be backward compatibility with Node.js v6 (and v4)
-
-### 0.5.0 (2018-11-17)
-- (zefau) added HTTPs support for webhooks (including self-signed certificates)
-- (zefau) added support for token generation using client ID and client secret
-
-### 0.4.5 (2018-11-04)
-- (zefau) added HTTPs support for webhooks ~~(which however does not seem to be supported by the Nello API)~~
-
-### 0.4.3 / 0.4.4 (2018-11-03)
-- (zefau) fixed invalid module exports
-
-### 0.4.0 (2018-11-03)
-- (zefau) initial release
+### 1.x.x
+The previous API implementation (using callbacks instead of promises) [can be found in the Github branch v1](https://github.com/Zefau/nello.io/tree/v1-callback).
 
 
 ## API Documentation (using JSDoc)
 You may update the API documentation using JSDoc (https://github.com/jsdoc3/jsdoc#installation-and-usage):
 ```
-jsdoc nello.js -d docs --template ../minami
+jsdoc lib -d docs --template ../minami
 ```
 
 
 ## License
 The MIT License (MIT)
 
-Copyright (c) 2018 Zefau <zefau@mailbox.org>
+Copyright (c) 2019 Zefau <zefau@mailbox.org>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
