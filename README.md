@@ -6,6 +6,7 @@ This is a Node.js / javascript implementation of the nello.io API.
 
 [![NPM version](http://img.shields.io/npm/v/nello.svg)](https://www.npmjs.com/package/nello)
 [![Downloads](https://img.shields.io/npm/dm/nello.svg)](https://www.npmjs.com/package/nello)
+[![Travis CI](https://travis-ci.org/Zefau/nello.io.svg?branch=master)](https://travis-ci.org/Zefau/nello.io)
 
 [![NPM](https://nodei.co/npm/nello.png?downloads=true)](https://nodei.co/npm/nello/)
 
