@@ -70,6 +70,9 @@ You may find a full implemented example at [https://github.com/Zefau/ioBroker.ne
 
 ## Changelog
 
+### 2.0.1 (2019-05-10)
+- (zefau) Updated dependencies
+
 ### 2.0.0 (2019-01-29)
 - (zefau) Changed API implementation to use promises (via [request-promise](https://www.npmjs.com/package/request-promise))
 

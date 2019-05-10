@@ -1,43 +1,65 @@
 {
-  "name": "nello",
-  "version": "2.0.0",
-  "description": "Node.js implementation of the nello.io API (using promises)",
+  "_from": "nello@^2.0.0",
+  "_id": "nello@2.0.0",
+  "_inBundle": false,
+  "_integrity": "sha512-I8YnXkGhilcQV+ie+BuordzTBSWbyoiZqZvURLcz9lQQ7z454qDTPP6IpIdCctSo2myWL5rV9wssKNTA+4p1Uw==",
+  "_location": "/nello",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "nello@^2.0.0",
+    "name": "nello",
+    "escapedName": "nello",
+    "rawSpec": "^2.0.0",
+    "saveSpec": null,
+    "fetchSpec": "^2.0.0"
+  },
+  "_requiredBy": [
+    "/iobroker.nello"
+  ],
+  "_resolved": "https://registry.npmjs.org/nello/-/nello-2.0.0.tgz",
+  "_shasum": "60338fa7751884e81506d4f4a3190c0bd85113de",
+  "_spec": "nello@^2.0.0",
+  "_where": "/opt/iobroker/node_modules/iobroker.nello",
   "author": {
     "name": "zefau",
     "email": "zefau@mailbox.org"
   },
-  
+  "bugs": {
+    "url": "https://github.com/Zefau/nello.io/issues"
+  },
+  "bundleDependencies": false,
+  "dependencies": {
+    "events": "^3.0.0",
+    "express": "^4.16.4",
+    "ical.js": "^1.3.0",
+    "querystring": "^0.2.0",
+    "request-promise": "^4.2.4",
+    "url-parse": "^1.4.7",
+    "util": "^0.11.1"
+  },
+  "deprecated": false,
+  "description": "Node.js implementation of the nello.io API (using promises)",
+  "directories": {
+    "lib": "lib"
+  },
   "homepage": "https://github.com/Zefau/nello.io",
-  "license": "MIT",
   "keywords": [
     "nello",
     "nello.io",
     "door",
     "doorbell"
   ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "nello",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Zefau/nello.io"
-  },
-  "bugs": {
-    "url": "https://github.com/Zefau/nello.io/issues"
-  },
-  
-  "readmeFilename": "README.md",
-  "dependencies": {
-    "request-promise": "^4.2.2",
-    "querystring": "^0.2.0",
-    "ical.js": "^1.3.0",
-    "url-parse": "^1.4.4",
-    "express": "^4.16.4",
-    "events": "^3.0.0",
-    "util": "^0.11.1"
-  },
-  "main": "index.js",
-  "directories": {
-    "lib": "lib"
+    "url": "git+https://github.com/Zefau/nello.io.git"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
-  }
+  },
+  "version": "2.0.1"
 }
