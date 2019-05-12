@@ -2,16 +2,17 @@
 # nello.io
 nello one connects your intercom with your smartphone and Wi-Fi. This adapter connects your nello one to ioBroker using the official API (https://nellopublicapi.docs.apiary.io/).
 
-This is a Node.js / javascript implementation of the nello.io API.
+This is a Node.js implementation of the nello.io API.
 
 [![NPM version](http://img.shields.io/npm/v/nello.svg)](https://www.npmjs.com/package/nello)
+[![Travis CI](https://travis-ci.org/Zefau/nello.svg?branch=master)](https://travis-ci.org/Zefau/nello)
 [![Downloads](https://img.shields.io/npm/dm/nello.svg)](https://www.npmjs.com/package/nello)
 
 [![NPM](https://nodei.co/npm/nello.png?downloads=true)](https://nodei.co/npm/nello/)
 
 
 ## API documentation
-The documentation for this javascript implementation of the nello.io API can be found at https://zefau.github.io/nello.io/Nello.html.
+The documentation for this Node.js implementation of the nello.io API can be found at https://zefau.github.io/nello.io/Nello.html.
 
 
 ## Usage
