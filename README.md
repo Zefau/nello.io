@@ -7,8 +7,9 @@ This is a Node.js implementation of the nello.io API.
 [![NPM version](http://img.shields.io/npm/v/nello.svg)](https://www.npmjs.com/package/nello)
 [![Travis CI](https://travis-ci.org/Zefau/nello.io.svg?branch=master)](https://travis-ci.org/Zefau/nello.io)
 [![Downloads](https://img.shields.io/npm/dm/nello.svg)](https://www.npmjs.com/package/nello)
+[![Greenkeeper badge](https://badges.greenkeeper.io/Zefau/nello.io.svg)](https://greenkeeper.io/)
 
-[![NPM](https://nodei.co/npm/nello.png?downloads=true)](https://nodei.co/npm/nello/) [![Greenkeeper badge](https://badges.greenkeeper.io/Zefau/nello.io.svg)](https://greenkeeper.io/)
+[![NPM](https://nodei.co/npm/nello.png?downloads=true)](https://nodei.co/npm/nello/)
 
 
 ## API documentation
