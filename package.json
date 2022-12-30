@@ -43,7 +43,7 @@
     "chai": "^4.2.0",
     "eslint": "^5.16.0",
     "glob": "^7.1.4",
-    "mocha": "^6.1.4"
+    "mocha": "^10.2.0"
   },
   "deprecated": false,
   "description": "Node.js implementation of the nello.io API (using promises)",
